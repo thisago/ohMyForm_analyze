@@ -1,0 +1,80 @@
+#ROOT
+  padding: 1em
+
+  *
+    border-radius: .5em
+    box-sizing: border-box
+    outline: 0
+    transition: .5s
+
+.entries
+  display: flex
+  flex-direction: column
+
+  .entry
+    margin: 1em
+    background: white
+    max-height: 10em
+    overflow: hidden
+    border: .3em solid grey
+    position: relative
+
+    & a:nth-child(1)
+      font-size: 2.5em
+      position: absolute
+      top: 0
+      left: .1em
+      line-height: 1em
+      
+    &:target
+      max-height: initial
+      border: .3em solid #1890ff
+      & a:nth-child(1)
+        left: -1em
+      .fields
+        .field
+          border-color: #1890ff
+
+    .fields
+      display: flex
+      flex-direction: row
+      flex-wrap: wrap
+      align-items: center
+      justify-content: center
+
+.field
+  display: flex
+  flex-direction: column
+  margin: .5em
+  align-items: center
+  max-width: 25em
+  padding: 0.5em
+  height: fit-content
+  border: .2em solid grey
+  background: white
+
+  span
+    color: #000000dd
+    word-break: keep-all
+    overflow: hidden
+    text-overflow: ellipsis
+    color: grey
+  input
+    padding: .5em
+    color: black
+    width: 100%
+
+.config
+  .field
+    border: .2em solid #08d929
+
+.analysis
+  display: flex
+  .fields
+    .field
+      &.hidden
+        display: none
+      .controls
+        width: 100%
+        display: flex
+        justify-content: space-between
