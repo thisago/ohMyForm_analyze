@@ -8,7 +8,6 @@ var
   currPage* = 1
   currEntry* = 1
   analyzing* = false
-  currField* = ""
 
 proc refreshHash* =
   let hash = window.location.hash
@@ -26,12 +25,10 @@ proc processHash* =
     currPage = parts[0].tryParseInt
     currEntry = parts[1].tryParseInt
     analyzing = false
-  of 3, 4:
+  of 3:
     analyzing = parts[0] == "analyze"
     currPage = parts[1].tryParseInt
     currEntry = parts[2].tryParseInt
-    if parts.len == 4:
-      currField = parts[3]
   else: discard
 
 window.addEventListener("hashchange", proc (ev: Event) = processHash())

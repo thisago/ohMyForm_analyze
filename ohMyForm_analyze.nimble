@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.0"
+version       = "1.1.0"
 author        = "Thiago Navarro"
 description   = "A userscript that creates a easy to use interface to analyze the submitted forms"
 license       = "MIT"

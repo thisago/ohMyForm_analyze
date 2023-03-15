@@ -7,9 +7,6 @@ const userscriptHeader* = genMetadataBlock(
     "*://forms.*.*/*",
     "*://form.*.*/*"
   ],
-  # resource = [
-  #   ("css", "https://cdnjs.cloudflare.com/ajax/libs/balloon-css/1.2.0/balloon.min.css")
-  # ],
   version = "0.1.0",
   runAt = GmRunAt.docStart,
   downloadUrl = "https://git.ozzuu.com/thisago/ohMyForm_analyze/raw/branch/master/build/ohMyForm_analyze.user.js",

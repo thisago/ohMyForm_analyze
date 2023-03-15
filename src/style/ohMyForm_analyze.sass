@@ -31,7 +31,7 @@
       top: -1em
       left: .1em
       line-height: 1em
-      
+
     &:target
       max-height: initial
       border: .3em solid #1890ff
@@ -61,6 +61,9 @@
   border: .2em solid grey
   background: white
 
+  & > *
+    margin: .2em
+
   span
     color: #000000dd
     word-break: keep-all
@@ -80,15 +83,14 @@
   padding: 2em
   progress
     width: 100%
+  .report
+    font-size: 1.5em
   .fields
     width: 100%
     display: flex
+    flex-wrap: wrap
     justify-content: center
     align-content: center
     .field
       &.hidden
         display: none
-      .controls
-        width: 100%
-        display: flex
-        justify-content: space-between

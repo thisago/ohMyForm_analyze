@@ -5,7 +5,7 @@ from std/strutils import contains
 from std/json import parseJson, items, `{}`, JsonNode, len
 from std/json import `$`
 from std/strformat import fmt
-from std/tables import Table, `[]`, `[]=`, hasKey, initTable
+from std/tables import Table, `[]`, `[]=`, hasKey, initTable, keys, del, len
 from std/base64 import decode, encode
 
 include pkg/karax/prelude
@@ -26,18 +26,11 @@ var
 proc openReport(html: string) =
   discard window.open(fmt"https://code.ozzuu.com?fullscreen=true#{encode html}", "_blank")
 
-proc updateCurrField(field = currField) {.inline.} =
-  setHash fmt"analyze-{currPage}-{currEntry}-{field}"
-
 # Draw new interface
 proc draw: VNode =
-  var fields: JsonNode
-  if analyzing:
-    fields = entries{currEntry - 1}{"fields"} 
-    if analyzed == 0 or currField.len == 0:
-      updateCurrField(fields{0}.getId)
   result = buildHtml(tdiv):
     if analyzing:
+      let fields = entries{currEntry - 1}{"fields"}
       a(href = fmt"#{currPage}-{currEntry}"):
         text "Cancel analysis"
         proc onclick(ev: Event; el: VNode) =
@@ -45,20 +38,16 @@ proc draw: VNode =
           scores = initTable[string, string]()
           analyzed = 0
       tdiv(class = "analysis"):
-        progress(value = $(analyzed / (fields.len - 1)))
+        progress(value = $(scores.len / fields.len))
         tdiv(class = "fields"):
-          proc scoreIsValid(id: string): bool =
-            let
-              score = scores.getScore id
-              num = score.tryParseInt(-11)
+          proc scoreIsValid(score: string): bool =
+            let num = score.tryParseInt(-11)
             result = score.len > 0 and num >= -10 and num <= 10
             
           for i in 0..<fields.len:
             let
               field = fields{i}
               id = field.getId
-            if currField != id: continue
-            let
               nextId = fields{i + 1}.getId
               lastId = if i > 0: fields{i - 1}.getId else: ""
             tdiv(class = "field"):
@@ -69,42 +58,23 @@ proc draw: VNode =
               input(`type` = "number", placeholder = "Score", `data-id` = id,
                       selected = "true", max = "10", min = "-10"):
                 proc oninput(ev: Event; el: VNode) =
-                  scores[$el.getAttr("data-id")] = $el.value
-                proc onkeydown(ev: Event; el: VNode) =
-                  if cast[KeyboardEvent](ev).key == "Enter":
-                    if scoreIsValid $el.getAttr("data-id"):
-                      echo fmt"{analyzed=} {fields.len=}"
-                      if analyzed == fields.len - 1:
-                        openReport createReport(scores, entries{currEntry})
-                      else:
-                        inc analyzed
-                        updateCurrField(nextId)
-              tdiv(class = "controls"):
-                if lastId.len > 0:
-                  a(href = fmt"#analyze-{currPage}-{currEntry}-{lastId}"):
-                    text "Back"
-                    proc onclick(ev: Event; el: VNode) =
-                      dec analyzed
-                else:
-                  tdiv()
-                if nextId.len > 0:
-                  if scoreIsValid id:
-                    a(href = fmt"#analyze-{currPage}-{currEntry}-{nextId}"):
-                      text "Next"
-                      proc onclick(ev: Event; el: VNode) =
-                        inc analyzed
-                  else:
-                    span: text "Next"
-                else:
-                  if scoreIsValid id:
-                    a:
-                      text "Open report"
-                      proc onclick(ev: Event; el: VNode) =
-                        openReport createReport(scores, entries{currEntry - 1})
-                  else:
-                    span: text "Open report"
+                  let
+                    score = $el.value
+                    id = $el.getAttr("data-id")
+                  if scoreIsValid score:
+                    scores[id] = score
+                  elif scores.hasKey id:
+                    scores.del id
+                  
+        if scores.len == fields.len:
+          a(class = "report"):
+            text "Open report"
+            proc onclick(ev: Event; el: VNode) =
+              openReport createReport(scores, entries{currEntry - 1})
+        else:
+          span(class = "report"): text "Open report"
     else:
-      # List
+      # List 
       tdiv(class = "config"):
         h2: text fmt"Configs"
         tdiv(class = "field"):

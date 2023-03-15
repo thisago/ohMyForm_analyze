@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 1.1.0 (16/03/2023)
+
+- The analysis interface now show all data without pagination 
+
+---
+
 ## Version 1.0.0 (15/03/2023)
 
 - Added report generation
