@@ -12,7 +12,7 @@ const userscriptHeader* = genMetadataBlock(
   # ],
   version = "0.1.0",
   runAt = GmRunAt.docStart,
-  downloadUrl = "https://git.ozzuu.com/thisago/ohMyForm_analyze/raw/branch/master/build/ohMyForm_analyze.js",
+  downloadUrl = "https://git.ozzuu.com/thisago/ohMyForm_analyze/raw/branch/master/build/ohMyForm_analyze.user.js",
   description = "A userscript that creates a easy to use interface to analyze the submitted forms",
   homepageUrl = "https://git.ozzuu.com/thisago/ohMyForm_analyze",
 )
