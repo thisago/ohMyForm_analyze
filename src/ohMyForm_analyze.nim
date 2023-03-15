@@ -5,14 +5,13 @@ from std/strutils import contains
 from std/json import parseJson, items, `{}`, JsonNode, len
 from std/json import `$`
 from std/strformat import fmt
-from std/tables import Table, `[]`, `[]=`, hasKey
+from std/tables import Table, `[]`, `[]=`, hasKey, initTable
 from std/base64 import decode, encode
 
 include pkg/karax/prelude
 
 import pkg/jsFetchMock
 from pkg/util/forStr import tryParseInt
-from pkg/util/forHtml import genClass
 
 import ohMyForm_analyze/[core, urlHash, report]
 
@@ -21,59 +20,91 @@ var
   entries: JsonNode
   selectedEntries: seq[int]
   minFieldsToShow = 10
-  score: Table[string, int]
+  scores: Table[string, string]
+  analyzed = 0
 
 proc openReport(html: string) =
   discard window.open(fmt"https://code.ozzuu.com?fullscreen=true#{encode html}", "_blank")
 
+proc updateCurrField(field = currField) {.inline.} =
+  setHash fmt"analyze-{currPage}-{currEntry}-{field}"
 
 # Draw new interface
 proc draw: VNode =
-  let fields = entries{currEntry}{"fields"} 
-  var
-    lastId = ""
-    i = 0
-  if currField.len == 0:
-    let id = fields{0}.getId
-    setHash fmt"analyze-{currPage}-{currEntry}-{id}"
+  var fields: JsonNode
+  if analyzing:
+    fields = entries{currEntry - 1}{"fields"} 
+    if analyzed == 0 or currField.len == 0:
+      updateCurrField(fields{0}.getId)
   result = buildHtml(tdiv):
     if analyzing:
-      a(href = fmt"#{currPage}-{currEntry}", draggable = "false"):
+      a(href = fmt"#{currPage}-{currEntry}"):
         text "Cancel analysis"
         proc onclick(ev: Event; el: VNode) =
           waitToRefreshHash(200)
+          scores = initTable[string, string]()
+          analyzed = 0
       tdiv(class = "analysis"):
+        progress(value = $(analyzed / (fields.len - 1)))
         tdiv(class = "fields"):
-          for field in fields:
+          proc scoreIsValid(id: string): bool =
             let
+              score = scores.getScore id
+              num = score.tryParseInt(-11)
+            result = score.len > 0 and num >= -10 and num <= 10
+            
+          for i in 0..<fields.len:
+            let
+              field = fields{i}
               id = field.getId
+            if currField != id: continue
+            let
               nextId = fields{i + 1}.getId
-            tdiv(class = genClass({"field": true, "hidden": currField != id})):
+              lastId = if i > 0: fields{i - 1}.getId else: ""
+            tdiv(class = "field"):
               let name = field{"field", "title"}.getStr
               span: text name
               input(`type` = "text", readonly = "true",
                     value = field{"value"}.getStr)
-              input(`type` = "number", placeholder = "Score",
-                    value = score.getScore id):
+              input(`type` = "number", placeholder = "Score", `data-id` = id,
+                      selected = "true", max = "10", min = "-10"):
                 proc oninput(ev: Event; el: VNode) =
-                  score[id] = tryParseInt $el.value
+                  scores[$el.getAttr("data-id")] = $el.value
+                proc onkeydown(ev: Event; el: VNode) =
+                  if cast[KeyboardEvent](ev).key == "Enter":
+                    if scoreIsValid $el.getAttr("data-id"):
+                      echo fmt"{analyzed=} {fields.len=}"
+                      if analyzed == fields.len - 1:
+                        openReport createReport(scores, entries{currEntry})
+                      else:
+                        inc analyzed
+                        updateCurrField(nextId)
               tdiv(class = "controls"):
                 if lastId.len > 0:
                   a(href = fmt"#analyze-{currPage}-{currEntry}-{lastId}"):
                     text "Back"
+                    proc onclick(ev: Event; el: VNode) =
+                      dec analyzed
                 else:
                   tdiv()
                 if nextId.len > 0:
-                  a(href = fmt"#analyze-{currPage}-{currEntry}-{nextId}"):
-                    text "Next"
+                  if scoreIsValid id:
+                    a(href = fmt"#analyze-{currPage}-{currEntry}-{nextId}"):
+                      text "Next"
+                      proc onclick(ev: Event; el: VNode) =
+                        inc analyzed
+                  else:
+                    span: text "Next"
                 else:
-                  a:
-                    text "Open report"
-                    proc onclick(ev: Event; el: VNode) =
-                      openReport createReport(score, entries{currEntry})
-            lastId = id
-            inc i
+                  if scoreIsValid id:
+                    a:
+                      text "Open report"
+                      proc onclick(ev: Event; el: VNode) =
+                        openReport createReport(scores, entries{currEntry - 1})
+                  else:
+                    span: text "Open report"
     else:
+      # List
       tdiv(class = "config"):
         h2: text fmt"Configs"
         tdiv(class = "field"):
@@ -85,10 +116,11 @@ proc draw: VNode =
         h2: text fmt"Page {currPage} ({entries.len} per page). Selected entry {currEntry}"
         var i = 0
         for entry in entries:
-          if entry{"fields"}.len < minFieldsToShow: continue
           inc i
+          if entry{"fields"}.len < minFieldsToShow: continue
           tdiv(class = "entry", id = fmt"{currPage}-{i}"):
-            a(href = fmt"#{currPage}-{i}", draggable = "false"): text "+"
+            a(href = fmt"#{currPage}-{i}"): text "+"
+            a(href = fmt"#analyze-{currPage}-{i}"): text "Analyze"
             tdiv(class = "fields"):
               for field in entry{"fields"}:
                 tdiv(class = "field"):
@@ -96,7 +128,6 @@ proc draw: VNode =
                   span: text name
                   input(`type` = "text", readonly = "true",
                         value = field{"value"}.getStr)
-            a(href = fmt"#analyze-{currPage}-{i}", draggable = "false"): text "Analyze"
 
 var firstTime = true
 

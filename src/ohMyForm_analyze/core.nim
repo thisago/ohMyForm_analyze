@@ -7,7 +7,7 @@ proc getStr*(n: JsonNode): cstring =
 
 proc getId*(node: JsonNode): string {.inline.} =
   $node{"field", "id"}.getStr
-proc getScore*(t: Table[string, int]; id: string): string {.inline.} =
+proc getScore*(t: Table[string, string]; id: string): string {.inline.} =
   result = ""
   if t.hasKey id:
-    result = $t[id]
+    result = t[id]

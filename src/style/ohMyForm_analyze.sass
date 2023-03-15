@@ -25,12 +25,20 @@
       top: 0
       left: .1em
       line-height: 1em
+
+    & a:nth-child(2)
+      position: absolute
+      top: -1em
+      left: .1em
+      line-height: 1em
       
     &:target
       max-height: initial
       border: .3em solid #1890ff
       & a:nth-child(1)
         left: -1em
+      & a:nth-child(2)
+        top: .1em
       .fields
         .field
           border-color: #1890ff
@@ -69,8 +77,14 @@
     border: .2em solid #08d929
 
 .analysis
-  display: flex
+  padding: 2em
+  progress
+    width: 100%
   .fields
+    width: 100%
+    display: flex
+    justify-content: center
+    align-content: center
     .field
       &.hidden
         display: none

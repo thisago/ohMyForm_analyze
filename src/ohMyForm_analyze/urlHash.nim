@@ -10,7 +10,12 @@ var
   analyzing* = false
   currField* = ""
 
-window.addEventListener("hashchange", proc (ev: Event) =
+proc refreshHash* =
+  let hash = window.location.hash
+  window.location.hash = ""
+  discard window.setTimeout(proc = window.location.hash = hash, 0)
+
+proc processHash* =
   let hash = $window.location.hash
   if '-' notin hash:
     window.location.hash = "1-1"
@@ -28,14 +33,12 @@ window.addEventListener("hashchange", proc (ev: Event) =
     if parts.len == 4:
       currField = parts[3]
   else: discard
-)
 
-proc refreshHash* =
-  let hash = window.location.hash
-  window.location.hash = ""
-  discard window.setTimeout(proc = window.location.hash = hash, 0)
+window.addEventListener("hashchange", proc (ev: Event) = processHash())
+processHash()
 
 proc waitToRefreshHash*(ms = 0) =
   discard window.setTimeout(proc = refreshHash(), ms)
-proc setHash*(hash: string) =
-  window.location.hash = hash
+proc setHash*(hash: string; ms = 0) =
+  discard window.setTimeout(proc = window.location.hash = hash, ms)
+  

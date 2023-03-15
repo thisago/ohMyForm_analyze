@@ -4,7 +4,8 @@ const userscriptHeader* = genMetadataBlock(
   name = "OhMyForm Analyze",
   author = "Thiago Navarro",
   match = [
-    "*://forms.*.*/admin/forms/*/submissions"
+    "*://forms.*.*/*",
+    "*://form.*.*/*"
   ],
   # resource = [
   #   ("css", "https://cdnjs.cloudflare.com/ajax/libs/balloon-css/1.2.0/balloon.min.css")

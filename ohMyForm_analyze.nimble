@@ -28,12 +28,15 @@ from std/base64 import encode
 from std/os import `/`
 
 task finalize, "Uglify and add header":
-  let f = binDir / bin[0] & "." & backend
+  let
+    f = binDir / bin[0] & "." & backend
+    outF = binDir / bin[0] & ".user." & backend
   exec fmt"uglifyjs -o {f} {f}"
   let cssCode = gorgeEx("sass src/style/ohMyForm_analyze.sass")
-  if csscode.exitCode != 0:
+  if cssCode.exitCode != 0:
     quit cssCode.output
-  f.writeFile (userscriptHeader & "\n" & f.readFile).replace("CSSCODEHERE", cssCode.output.encode)
+  outF.writeFile (userscriptHeader & "\n" & f.readFile).replace("CSSCODEHERE", cssCode.output.encode)
+  rmFile f
 
 task buildRelease, "Build release version":
   exec "nimble -d:danger build"
