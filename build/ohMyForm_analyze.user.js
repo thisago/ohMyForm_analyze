@@ -2,7 +2,7 @@
 // @name OhMyForm Analyze
 // @namespace https://git.ozzuu.com/thisago/gm_api
 // @description A userscript that creates a easy to use interface to analyze the submitted forms
-// @version 0.1.0
+// @version 1.1.0
 // @author Thiago Navarro
 // @homepageURL https://git.ozzuu.com/thisago/ohMyForm_analyze
 // @match *://forms.*.*/*
