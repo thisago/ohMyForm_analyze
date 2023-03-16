@@ -24,7 +24,7 @@ var
   analyzed = 0
 
 proc openReport(html: string) =
-  discard window.open(fmt"https://code.ozzuu.com?fullscreen=true#{encode html}", "_blank")
+  discard window.open(fmt"https://code.ozzuu.com?newtab=true&mode=html#{encode html}", "_blank")
 
 # Draw new interface
 proc draw: VNode =

@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 1.1.1 (16/03/2023)
+
+- Fixed Ozzuu Code URL
+
+---
+
 ## Version 1.1.0 (16/03/2023)
 
 - The analysis interface now show all data without pagination 
