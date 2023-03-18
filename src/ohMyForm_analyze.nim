@@ -15,7 +15,6 @@ from pkg/util/forStr import tryParseInt
 
 import ohMyForm_analyze/[core, urlHash, report]
 
-
 var
   entries: JsonNode
   selectedEntries: seq[int]
@@ -53,8 +52,8 @@ proc draw: VNode =
             tdiv(class = "field"):
               let name = field{"field", "title"}.getStr
               span: text name
-              input(`type` = "text", readonly = "true",
-                    value = field{"value"}.getStr)
+              tdiv(class = "answer", `type` = "text", readonly = "true"):
+                text field{"value"}.getStr
               input(`type` = "number", placeholder = "Score", `data-id` = id,
                       selected = "true", max = "10", min = "-10"):
                 proc oninput(ev: Event; el: VNode) =

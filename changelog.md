@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 1.2.0 (18/03/2023)
+
+- Changed the analyze answer element from input to a div to show all text without needing to scroll
+
+---
+
 ## Version 1.1.1 (16/03/2023)
 
 - Fixed Ozzuu Code URL
