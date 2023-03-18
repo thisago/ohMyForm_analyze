@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 1.2.2 (18/03/2023)
+
+- Fixed report generation
+
+---
+
 ## Version 1.2.1 (18/03/2023)
 
 - Fixed score id to be index because if was question is duplicated, the "open report"

@@ -16,9 +16,11 @@ proc createReport*(scores: Table[string, string]; entry: JsonNode): string =
       th: text "Name"
       th: text "Value"
       th: text "Score"
+    var i = -1
     for field in entry{"fields"}:
+      inc i
       try:
-        let score = scores.getScore field.getId
+        let score = scores.getScore $i
         total += score.parseInt
         inc numFields
         tr:
