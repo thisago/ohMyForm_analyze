@@ -46,9 +46,7 @@ proc draw: VNode =
           for i in 0..<fields.len:
             let
               field = fields{i}
-              id = field.getId
-              nextId = fields{i + 1}.getId
-              lastId = if i > 0: fields{i - 1}.getId else: ""
+              id = $i
             tdiv(class = "field"):
               let name = field{"field", "title"}.getStr
               span: text name

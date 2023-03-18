@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 1.2.1 (18/03/2023)
+
+- Fixed score id to be index because if was question is duplicated, the "open report"
+  button never works
+
+---
+
 ## Version 1.2.0 (18/03/2023)
 
 - Changed the analyze answer element from input to a div to show all text without needing to scroll
